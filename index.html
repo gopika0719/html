@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surprise</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tangerine:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(to bottom, red, black);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .giftbox {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            background: linear-gradient(to right, #ff7f50, #ff1493);
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .giftbox:hover {
+            transform: scale(1.1);
+        }
+        .giftbox::before, .giftbox::after {
+            content: "";
+            position: absolute;
+            background: yellow;
+        }
+        .giftbox::before {
+            width: 100%;
+            height: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .giftbox::after {
+            height: 100%;
+            width: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .message {
+            display: none;
+            text-align: center;
+        }
+        .message p {
+            font-size: 24px;
+            color: white;
+        }
+        .wish-button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            background: #ff1493;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .envelope-wrapper {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            position: relative;
+            cursor: pointer;
+        }
+        .envelope {
+            position: relative;
+            width: 300px;
+            height: 230px;
+            background: #f5edd1;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.2);
+        }
+        .envelope::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            z-index: 2;
+            border-top: 130px solid #ecdeb8;
+            border-right: 150px solid transparent;
+            border-left: 150px solid transparent;
+            transform-origin: top;
+            transition: all 0.5s ease-in-out 0.7s;
+        }
+        .envelope::after {
+            content: "";
+            position: absolute;
+            z-index: 2;
+            width: 0px;
+            height: 0px;
+            border-top: 130px solid transparent;
+            border-right: 150px solid #e6cfa7;
+            border-bottom: 100px solid #e6cfa7;
+            border-left: 150px solid #e6cfa7;
+        }
+        .letter {
+            position: absolute;
+            right: 20%;
+            bottom: 0;
+            width: 54%;
+            height: 80%;
+            background: white;
+            text-align: center;
+            transition: all 1s ease-in-out;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+            padding: 20px 10px;
+            font-family: 'Tangerine', cursive;
+            font-size: 24px;
+            color: black;
+        }
+        .heart {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 30px;
+            height: 30px;
+            background: rgb(252, 8, 231);
+            z-index: 4;
+            transform: translate(-50%, -50%) rotate(45deg);
+            transition: transform 0.5s ease-in-out 1s;
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
+        }
+        .heart::before, .heart::after {
+            content: "";
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-color: rgb(252, 8, 231);
+            border-radius: 50%;
+        }
+        .heart::before {
+            top: -15px;
+        }
+        .heart::after {
+            right: 15px;
+        }
+        .flap .envelope::before {
+            transform: rotateX(180deg);
+            z-index: 0;
+        }
+        .flap .letter {
+            bottom: 100px;
+            transform: scale(1.5);
+            transition-delay: 1s;
+        }
+        .flap .heart {
+            transform: rotate(90deg);
+            transition-delay: 0.4s;
+        }
+        .hearts {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        .heart-shape {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: red;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            animation: float 4s infinite;
+        }
+        @keyframes float {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-1000px);
+                opacity: 0;
+            }
+        }
+        .glow-border {
+            border: 5px solid;
+            border-image-slice: 1;
+            border-image-source: linear-gradient(45deg, red, yellow, green, blue, purple, red);
+            animation: border-glow 1.5s infinite;
+        }
+        @keyframes border-glow {
+            0% {
+                border-image-source: linear-gradient(45deg, red, yellow, green, blue, purple, red);
+            }
+            100% {
+                border-image-source: linear-gradient(45deg, purple, red, yellow, green, blue, purple);
+            }
+        }
+        .popup-image {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            text-align: center;
+            z-index: 5;
+            width: 80%;
+            max-width: 400px;
+        }
+        .popup-image img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            border: 5px solid;
+            border-image-slice: 1;
+            border-image-source: linear-gradient(45deg, red, yellow, green, blue, purple, red);
+            animation: border-glow 1.5s infinite;
+        }
+        .popup-image p {
+            margin: 10px 0;
+            font-size: 18px;
+            color: black;
+            font-family: 'Tangerine', cursive;
+        }
+        .popup-image .sign-off {
+            font-size: 24px;
+            color: black;
+            font-family: 'Tangerine', cursive;
+        }
+    </style>
+</head>
+<body>
+    <div class="giftbox" id="giftbox">
+        <p class="giftbox-text">Click Me!</p>
+    </div>
+    <div class="message" id="message">
+        <p>Hey👋</p>
+        <button class="wish-button" id="wishButton">Click here for surprise</button>
+    </div>
+    <div class="envelope-wrapper" id="envelopeWrapper">
+        <div class="envelope">
+            <div class="letter glow-border">
+                <p>Happy Birthday!</p>
+            </div>
+        </div>
+        <div class="heart"></div>
+    </div>
+    <div class="hearts" id="hearts"></div>
+    <div class="popup-image" id="popupImage">
+        <img src="photo.jpeg" alt="Surprise Image">
+        <p class="apology-text"><strong>I deeply regret my past actions and sincerely apologize. Nonetheless, I want to wish you a very Happy Birthday❤️</strong></p>
+        <p class="sign-off"><strong></strong>With Love, Gopika</strong></p>
+    </div>
+    <script>
+        const giftbox = document.getElementById('giftbox');
+        const message = document.getElementById('message');
+        const wishButton = document.getElementById('wishButton');
+        const envelopeWrapper = document.getElementById('envelopeWrapper');
+        const hearts = document.getElementById('hearts');
+        const heart = document.querySelector('.heart');
+        const popupImage = document.getElementById('popupImage');
+
+        giftbox.addEventListener('click', () => {
+            giftbox.style.display = 'none';
+            message.style.display = 'block';
+        });
+
+        wishButton.addEventListener('click', () => {
+            message.style.display = 'none';
+            envelopeWrapper.style.display = 'flex';
+        });
+
+        heart.addEventListener('click', () => {
+            envelopeWrapper.classList.toggle('flap');
+            setTimeout(() => {
+                popupImage.style.display = 'block';
+                showHearts();
+            }, 1500);
+        });
+
+        function showHearts() {
+            for (let i = 0; i < 100; i++) {
+                const heart = document.createElement('div');
+                heart.classList.add('heart-shape');
+                heart.style.left = `${Math.random() * 100}%`;
+                heart.style.animationDuration = `${Math.random() * 2 + 3}s`;
+                hearts.appendChild(heart);
+                setTimeout(() => heart.remove(), 4000);
+            }
+        }
+    </script>
+</body>
+</html>
